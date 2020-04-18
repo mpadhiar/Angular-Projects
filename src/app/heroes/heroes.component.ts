@@ -11,20 +11,28 @@ import { Observable } from 'rxjs';
 })
 export class HeroesComponent implements OnInit {
 
-  heroes: Observable<Hero[]>;
-  selectedHero : Hero;
+  heroes: Hero[];
   constructor(private heroService: HeroService, private messageService: MessageService) { 
 
   }
 
   ngOnInit() {
-    this.heroes =  this.heroService.getHeroes();
+     this.heroService.getHeroes().subscribe(heroes => this.heroes = heroes);
   }
 
-  OnSelect(hero: Hero)
-  {
-    this.selectedHero = hero;
-    this.messageService.add(`HeroService: Selected hero id=${hero.id}`);
+  add(name: string): void {
+    name = name.trim();
+    if (!name) { return; }
+    this.heroService.addHero({ name } as Hero)
+      .subscribe(hero => {
+        this.heroes.push(hero);
+      });
+  }
+
+
+  delete(hero: Hero): void {
+    this.heroes = this.heroes.filter(h => h !== hero);
+    this.heroService.deleteHero(hero).subscribe();
   }
 
 }
