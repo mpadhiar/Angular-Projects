@@ -73,6 +73,22 @@ updateHero (hero: Hero): Observable<any> {
   );
 }
 
+
+public searchHero(searchText: string) : Observable<Hero[]>
+{
+  if(!searchText.trim())
+  {
+    return of([]);
+  }
+
+  const url = `${this.heroesUrl}/?name=${searchText}`;
+
+  return this.httpClient.get<Hero[]>(url).pipe(
+    tap(x => x.length > 0 ? this.log("found heroes with name") : this.log("No heroes found with name")),
+    catchError(this.handleError<Hero[]>('searchHero', []))
+  ); 
+}
+
   /**
    * Handle Http operation that failed.
    * Let the app continue.
@@ -91,7 +107,6 @@ updateHero (hero: Hero): Observable<any> {
       return of(result as T);
     };
   }
-
 
   
 }
